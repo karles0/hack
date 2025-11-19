@@ -36,13 +36,22 @@ export const Tasks = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [taskDetails, setTaskDetails] = useState<Task | null>(null);
   const [newStatus, setNewStatus] = useState<TaskStatus>('TODO');
 
   const loadTasks = async (page: number = 1) => {
     setIsLoading(true);
     try {
-      const filters: any = { page, limit: 20 };
+      const filters: {
+        page: number;
+        limit: number;
+        project_id?: number;
+        status?: TaskStatus;
+        priority?: TaskPriority;
+        assigned_to?: number;
+      } = { page, limit: 20 };
 
       if (projectIdFilter) filters.project_id = parseInt(projectIdFilter);
       if (statusFilter) filters.status = statusFilter;
@@ -62,6 +71,7 @@ export const Tasks = () => {
 
   useEffect(() => {
     loadTasks(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleApplyFilters = () => {
@@ -111,11 +121,15 @@ export const Tasks = () => {
     }
   };
 
-  const handleViewTask = (task: Task) => {
-    // Aquí podrías navegar a una página de detalles
-    alert(
-      `Tarea: ${task.title}\nEstado: ${task.status}\nPrioridad: ${task.priority}\nDescripción: ${task.description}`
-    );
+  const handleViewTask = async (task: Task) => {
+    try {
+      const details = await taskService.getTask(task.id);
+      setTaskDetails(details);
+      setIsViewModalOpen(true);
+    } catch (error) {
+      console.error('Error loading task details:', error);
+      alert('Error al cargar los detalles de la tarea');
+    }
   };
 
   const handleLogout = () => {
@@ -456,6 +470,112 @@ export const Tasks = () => {
               </Button>
             </div>
           </div>
+        </Modal>
+
+        {/* View Task Details Modal */}
+        <Modal
+          isOpen={isViewModalOpen}
+          onClose={() => {
+            setIsViewModalOpen(false);
+            setTaskDetails(null);
+          }}
+          title="Detalles de la Tarea"
+        >
+          {taskDetails && (
+            <div style={{ fontSize: '0.9375rem' }}>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem', color: '#111827' }}>
+                  {taskDetails.title}
+                </h3>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                  <span
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '0.25rem',
+                      backgroundColor: taskDetails.status === 'COMPLETED' ? '#d1fae5' : taskDetails.status === 'IN_PROGRESS' ? '#dbeafe' : '#e5e7eb',
+                      color: taskDetails.status === 'COMPLETED' ? '#065f46' : taskDetails.status === 'IN_PROGRESS' ? '#1e40af' : '#374151',
+                    }}
+                  >
+                    {taskDetails.status.replace('_', ' ')}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '0.25rem',
+                      backgroundColor: taskDetails.priority === 'URGENT' ? '#fee2e2' : taskDetails.priority === 'HIGH' ? '#fed7aa' : taskDetails.priority === 'MEDIUM' ? '#fef3c7' : '#d1fae5',
+                      color: taskDetails.priority === 'URGENT' ? '#991b1b' : taskDetails.priority === 'HIGH' ? '#9a3412' : taskDetails.priority === 'MEDIUM' ? '#92400e' : '#065f46',
+                    }}
+                  >
+                    {taskDetails.priority}
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.25rem', color: '#374151' }}>
+                    Descripción
+                  </label>
+                  <p style={{ color: '#6b7280', margin: 0 }}>
+                    {taskDetails.description || 'Sin descripción'}
+                  </p>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.25rem', color: '#374151' }}>
+                    Asignado a
+                  </label>
+                  <p style={{ color: '#6b7280', margin: 0 }}>
+                    {taskDetails.assigned_to ? `Usuario #${taskDetails.assigned_to}` : 'Sin asignar'}
+                  </p>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.25rem', color: '#374151' }}>
+                    Fecha Límite
+                  </label>
+                  <p style={{ color: '#6b7280', margin: 0 }}>
+                    {taskDetails.due_date
+                      ? new Date(taskDetails.due_date).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })
+                      : 'Sin fecha límite'}
+                  </p>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.25rem', color: '#374151' }}>
+                      Creado
+                    </label>
+                    <p style={{ color: '#6b7280', margin: 0, fontSize: '0.875rem' }}>
+                      {new Date(taskDetails.created_at).toLocaleString('es-ES')}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.25rem', color: '#374151' }}>
+                      Actualizado
+                    </label>
+                    <p style={{ color: '#6b7280', margin: 0, fontSize: '0.875rem' }}>
+                      {new Date(taskDetails.updated_at).toLocaleString('es-ES')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
+                <Button onClick={() => {
+                  setIsViewModalOpen(false);
+                  setTaskDetails(null);
+                }}>
+                  Cerrar
+                </Button>
+              </div>
+            </div>
+          )}
         </Modal>
       </div>
     </div>

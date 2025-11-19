@@ -28,7 +28,7 @@ export const Projects = () => {
   const loadProjects = async (page: number = 1, searchQuery?: string) => {
     setIsLoading(true);
     try {
-      const response = await projectService.listProjects(page, 10, searchQuery);
+      const response = await projectService.listProjects(page, 5, searchQuery);
       setProjects(response.projects);
       setCurrentPage(response.current_page);
       setTotalPages(response.total_pages);
@@ -40,7 +40,7 @@ export const Projects = () => {
   };
 
   useEffect(() => {
-    loadProjects(1, search);
+    loadProjects(1);
   }, []);
 
   const handleSearch = () => {

@@ -59,9 +59,6 @@ export const Dashboard = () => {
             <p style={{ color: '#6b7280', marginBottom: '0.5rem' }}>
               <strong>Email:</strong> {user?.email}
             </p>
-            <p style={{ color: '#6b7280' }}>
-              <strong>User ID:</strong> {user?.id}
-            </p>
           </div>
           <div
             style={{

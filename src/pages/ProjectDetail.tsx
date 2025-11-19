@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { projectService } from '../services/projectService';
 import { Button } from '../components/common/Button';
 import { ROUTES } from '../utils/constants';
-import type { Project, Task } from '../types';
+import type { Project, Task, ApiError } from '../types';
 
 export const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,27 +16,32 @@ export const ProjectDetail = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    const loadProject = async () => {
+      if (!id) {
+        navigate(ROUTES.PROJECTS);
+        return;
+      }
+
+      setIsLoading(true);
+      setError('');
+      try {
+        const data = await projectService.getProject(parseInt(id));
+        setProject(data);
+      } catch (err) {
+        const error = err as ApiError | Error;
+        console.error('Error loading project:', error);
+        if ('detail' in error && error.detail) {
+          setError(typeof error.detail === 'string' ? error.detail : 'Error al cargar el proyecto');
+        } else {
+          setError('Error al cargar el proyecto');
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     loadProject();
-  }, [id]);
-
-  const loadProject = async () => {
-    if (!id) {
-      navigate(ROUTES.PROJECTS);
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-    try {
-      const data = await projectService.getProject(parseInt(id));
-      setProject(data);
-    } catch (err: any) {
-      console.error('Error loading project:', err);
-      setError(err?.detail || 'Error al cargar el proyecto');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [id, navigate]);
 
   const handleLogout = () => {
     logout();

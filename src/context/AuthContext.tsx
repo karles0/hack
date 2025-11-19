@@ -1,16 +1,16 @@
-import { createContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useState, type ReactNode } from 'react';
 import { authService } from '../services/authService';
 import type { User, LoginRequest, RegisterRequest } from '../types';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
   login: (credentials: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => void;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined
 );
@@ -20,17 +20,14 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
+  const [user, setUser] = useState<User | null>(() => {
     // Check if user is already logged in on mount
     const currentUser = authService.getUser();
     if (currentUser && authService.isAuthenticated()) {
-      setUser(currentUser);
+      return currentUser;
     }
-    setIsLoading(false);
-  }, []);
+    return null;
+  });
 
   const login = async (credentials: LoginRequest) => {
     try {
@@ -61,7 +58,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
-    isLoading,
     login,
     register,
     logout,

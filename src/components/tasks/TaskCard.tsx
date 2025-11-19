@@ -127,9 +127,6 @@ export const TaskCard = ({
           }}
         >
           <div>
-            <strong>Proyecto ID:</strong> {task.project_id}
-          </div>
-          <div>
             <strong>Fecha límite:</strong> {formatDate(task.due_date)}
           </div>
           {task.assigned_to && (
