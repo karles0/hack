@@ -56,9 +56,27 @@ export const TaskForm = ({
         title: title.trim(),
         description: description.trim(),
         priority,
-        due_date: dueDate || null,
-        assigned_to: assignedTo && assignedTo.trim() ? parseInt(assignedTo) : null,
       };
+
+      // Convert due_date to ISO 8601 format if provided
+      if (dueDate) {
+        // Convert YYYY-MM-DD to ISO 8601 with timezone
+        const dateObj = new Date(dueDate + 'T00:00:00Z');
+        data.due_date = dateObj.toISOString();
+      } else {
+        data.due_date = null;
+      }
+
+      // Handle assigned_to
+      if (assignedTo && assignedTo.trim()) {
+        const assignedId = parseInt(assignedTo);
+        if (isNaN(assignedId)) {
+          throw new Error('ID de usuario asignado inválido');
+        }
+        data.assigned_to = assignedId;
+      } else {
+        data.assigned_to = null;
+      }
 
       if (!task) {
         // For new tasks, include project_id
@@ -69,12 +87,7 @@ export const TaskForm = ({
         data.project_id = projectId;
       }
 
-      // Validate assigned_to if provided
-      if (data.assigned_to !== null && isNaN(data.assigned_to)) {
-        throw new Error('ID de usuario asignado inválido');
-      }
-
-      console.log('Enviando datos de tarea:', data);
+      console.log('Enviando datos de tarea:', JSON.stringify(data, null, 2));
       await onSubmit(data);
     } catch (err: any) {
       console.error('Error al guardar tarea:', err);
