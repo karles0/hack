@@ -5,6 +5,7 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { Projects } from './pages/Projects';
+import { ProjectDetail } from './pages/ProjectDetail';
 import { Tasks } from './pages/Tasks';
 import { Team } from './pages/Team';
 import { ROUTES } from './utils/constants';
@@ -23,6 +24,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.PROJECT_DETAIL}
+            element={
+              <ProtectedRoute>
+                <ProjectDetail />
               </ProtectedRoute>
             }
           />
