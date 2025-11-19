@@ -25,10 +25,27 @@ export const LoginForm = () => {
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
       const apiError = err as ApiError;
-      const errorMessage =
-        apiError.detail?.[0]?.msg ||
-        apiError.message ||
-        'Invalid credentials. Please try again.';
+      let errorMessage = 'Invalid credentials. Please try again.';
+
+ 
+
+      if (apiError.detail) {
+
+        if (Array.isArray(apiError.detail)) {
+
+          errorMessage = apiError.detail.map(d => d.msg).join(', ');
+
+        } else {
+
+          errorMessage = apiError.detail;
+
+        }
+
+      } else if (apiError.message) {
+
+        errorMessage = apiError.message;
+
+      }
       setError(errorMessage);
     } finally {
       setIsLoading(false);

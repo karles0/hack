@@ -40,10 +40,27 @@ export const RegisterForm = () => {
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
       const apiError = err as ApiError;
-      const errorMessage =
-        apiError.detail?.[0]?.msg ||
-        apiError.message ||
-        'Registration failed. Please try again.';
+      let errorMessage = 'Registration failed. Please try again.';
+
+ 
+
+      if (apiError.detail) {
+
+        if (Array.isArray(apiError.detail)) {
+
+          errorMessage = apiError.detail.map(d => d.msg).join(', ');
+
+        } else {
+
+          errorMessage = apiError.detail;
+
+        }
+
+      } else if (apiError.message) {
+
+        errorMessage = apiError.message;
+
+      }
       setError(errorMessage);
     } finally {
       setIsLoading(false);
