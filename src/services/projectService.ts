@@ -64,10 +64,11 @@ export const projectService = {
     projectId: number,
     data: UpdateProjectRequest
   ): Promise<Project> {
-    const response = await api.put<Project>(
-      `${API_ENDPOINTS.PROJECTS.BASE}/${projectId}`,
-      data
-    );
+    const url = `${API_ENDPOINTS.PROJECTS.BASE}/${projectId}`;
+    console.log('PUT Request URL:', url);
+    console.log('PUT Request Data:', JSON.stringify(data, null, 2));
+    const response = await api.put<Project>(url, data);
+    console.log('PUT Response:', response.data);
     return response.data;
   },
 

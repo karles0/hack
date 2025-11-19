@@ -63,9 +63,26 @@ export const TaskForm = ({
         data.project_id = parseInt(selectedProjectId);
       }
 
+      console.log('Enviando datos de tarea:', data);
       await onSubmit(data);
     } catch (err: any) {
-      setError(err.message || 'Error al guardar la tarea');
+      console.error('Error al guardar tarea:', err);
+      // Mostrar detalles del error del backend
+      let errorMessage = 'Error al guardar la tarea';
+      if (err?.detail) {
+        if (Array.isArray(err.detail)) {
+          errorMessage = err.detail.map((d: any) => d.msg).join(', ');
+        } else {
+          errorMessage = JSON.stringify(err.detail);
+        }
+      } else if (err?.message) {
+        errorMessage = err.message;
+      }
+      // Si es 404, mostrar mensaje específico
+      if (err?.status === 404 || err?.response?.status === 404) {
+        errorMessage = 'El endpoint de tareas no está disponible en el backend (404)';
+      }
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

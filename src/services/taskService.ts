@@ -47,7 +47,10 @@ export const taskService = {
   // Crea una nueva tarea
   // ======================================
   async createTask(data: CreateTaskRequest): Promise<Task> {
+    console.log('POST Request URL:', API_ENDPOINTS.TASKS.BASE);
+    console.log('POST Request Data:', JSON.stringify(data, null, 2));
     const response = await api.post<Task>(API_ENDPOINTS.TASKS.BASE, data);
+    console.log('POST Response:', response.data);
     return response.data;
   },
 

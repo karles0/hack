@@ -40,9 +40,23 @@ export const ProjectForm = ({
     setIsLoading(true);
 
     try {
-      await onSubmit({ name, description, status });
+      const submitData = { name, description, status };
+      console.log('Enviando datos del proyecto:', submitData);
+      await onSubmit(submitData);
     } catch (err: any) {
-      setError(err.message || 'Error al guardar el proyecto');
+      console.error('Error al guardar proyecto:', err);
+      // Mostrar detalles del error del backend
+      let errorMessage = 'Error al guardar el proyecto';
+      if (err?.detail) {
+        if (Array.isArray(err.detail)) {
+          errorMessage = err.detail.map((d: any) => d.msg).join(', ');
+        } else {
+          errorMessage = JSON.stringify(err.detail);
+        }
+      } else if (err?.message) {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

@@ -28,7 +28,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      throw error.response.data;
+      // Preserve status code in the error object
+      const enhancedError = {
+        ...error.response.data,
+        status: error.response.status,
+        statusText: error.response.statusText,
+      };
+      throw enhancedError;
     }
     throw error;
   }
