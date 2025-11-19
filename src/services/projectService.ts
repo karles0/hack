@@ -18,7 +18,7 @@ export const projectService = {
     limit: number = 10,
     search?: string
   ): Promise<ProjectsListResponse> {
-    const params: Record<string, any> = { page, limit };
+    const params: Record<string, string | number> = { page, limit };
     if (search) {
       params.search = search;
     }

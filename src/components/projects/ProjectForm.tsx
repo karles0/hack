@@ -1,7 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
-import type { Project, ProjectStatus } from '../../types';
+import type { Project, ProjectStatus, ApiError } from '../../types';
 
 interface ProjectFormProps {
   project?: Project;
@@ -57,20 +57,21 @@ export const ProjectForm = ({
 
       console.log('Enviando datos del proyecto:', submitData);
       await onSubmit(submitData);
-    } catch (err: any) {
-      console.error('Error al guardar proyecto:', err);
-      console.error('Error detail completo:', JSON.stringify(err, null, 2));
+    } catch (err) {
+      const error = err as ApiError | Error;
+      console.error('Error al guardar proyecto:', error);
+      console.error('Error detail completo:', JSON.stringify(error, null, 2));
       // Mostrar detalles del error del backend
       let errorMessage = 'Error al guardar el proyecto';
-      if (err?.detail) {
-        if (Array.isArray(err.detail)) {
-          console.error('Error detail array:', err.detail);
-          errorMessage = err.detail.map((d: any) => `${d.loc?.join('.')}: ${d.msg}`).join(', ');
+      if ('detail' in error && error.detail) {
+        if (Array.isArray(error.detail)) {
+          console.error('Error detail array:', error.detail);
+          errorMessage = error.detail.map((d) => `${d.loc?.join('.')}: ${d.msg}`).join(', ');
         } else {
-          errorMessage = `${err.detail}`;
+          errorMessage = `${error.detail}`;
         }
-      } else if (err?.message) {
-        errorMessage = err.message;
+      } else if ('message' in error && error.message) {
+        errorMessage = error.message;
       }
       setError(errorMessage);
     } finally {

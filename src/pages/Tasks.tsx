@@ -42,7 +42,14 @@ export const Tasks = () => {
   const loadTasks = async (page: number = 1) => {
     setIsLoading(true);
     try {
-      const filters: any = { page, limit: 20 };
+      const filters: {
+        page: number;
+        limit: number;
+        project_id?: number;
+        status?: TaskStatus;
+        priority?: TaskPriority;
+        assigned_to?: number;
+      } = { page, limit: 20 };
 
       if (projectIdFilter) filters.project_id = parseInt(projectIdFilter);
       if (statusFilter) filters.status = statusFilter;
@@ -62,6 +69,7 @@ export const Tasks = () => {
 
   useEffect(() => {
     loadTasks(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleApplyFilters = () => {

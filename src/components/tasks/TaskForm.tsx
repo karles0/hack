@@ -2,12 +2,12 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
 import { projectService } from '../../services/projectService';
-import type { Task, TaskPriority, Project } from '../../types';
+import type { Task, TaskPriority, Project, CreateTaskRequest, UpdateTaskRequest, ApiError } from '../../types';
 
 interface TaskFormProps {
   task?: Task;
   projectId?: number;
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: CreateTaskRequest | UpdateTaskRequest) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -76,31 +76,20 @@ export const TaskForm = ({
 
     try {
       // Build task data object, ensuring proper types
-      const data: any = {
+      const baseData = {
         title: title.trim(),
         description: description.trim(),
         priority,
+        due_date: dueDate ? new Date(dueDate + 'T00:00:00Z').toISOString() : null,
+        assigned_to: assignedTo && assignedTo.trim() ? parseInt(assignedTo) : null,
       };
 
-      // Convert due_date to ISO 8601 format if provided
-      if (dueDate) {
-        // Convert YYYY-MM-DD to ISO 8601 with timezone
-        const dateObj = new Date(dueDate + 'T00:00:00Z');
-        data.due_date = dateObj.toISOString();
-      } else {
-        data.due_date = null;
+      // Validate assigned_to if provided
+      if (assignedTo && assignedTo.trim() && isNaN(parseInt(assignedTo))) {
+        throw new Error('ID de usuario asignado inválido');
       }
 
-      // Handle assigned_to
-      if (assignedTo && assignedTo.trim()) {
-        const assignedId = parseInt(assignedTo);
-        if (isNaN(assignedId)) {
-          throw new Error('ID de usuario asignado inválido');
-        }
-        data.assigned_to = assignedId;
-      } else {
-        data.assigned_to = null;
-      }
+      let data: CreateTaskRequest | UpdateTaskRequest;
 
       if (!task) {
         // For new tasks, include project_id
@@ -108,30 +97,34 @@ export const TaskForm = ({
         if (isNaN(projectId)) {
           throw new Error('ID de proyecto inválido');
         }
-        data.project_id = projectId;
+        data = { ...baseData, project_id: projectId } as CreateTaskRequest;
+      } else {
+        // For updates, don't include project_id
+        data = baseData as UpdateTaskRequest;
       }
 
       console.log('Enviando datos de tarea:', JSON.stringify(data, null, 2));
       await onSubmit(data);
-    } catch (err: any) {
-      console.error('Error al guardar tarea:', err);
-      console.error('Error detail completo:', JSON.stringify(err, null, 2));
+    } catch (err) {
+      const error = err as ApiError | Error;
+      console.error('Error al guardar tarea:', error);
+      console.error('Error detail completo:', JSON.stringify(error, null, 2));
       // Mostrar detalles del error del backend
       let errorMessage = 'Error al guardar la tarea';
-      if (err?.detail) {
-        if (Array.isArray(err.detail)) {
-          console.error('Error detail array:', err.detail);
-          errorMessage = err.detail.map((d: any) => `${d.loc?.join('.')}: ${d.msg}`).join(', ');
+      if ('detail' in error && error.detail) {
+        if (Array.isArray(error.detail)) {
+          console.error('Error detail array:', error.detail);
+          errorMessage = error.detail.map((d) => `${d.loc?.join('.')}: ${d.msg}`).join(', ');
         } else {
           // El detail es un string (ej: "Project not found")
-          errorMessage = `${err.detail}`;
+          errorMessage = `${error.detail}`;
         }
-      } else if (err?.message) {
-        errorMessage = err.message;
+      } else if ('message' in error && error.message) {
+        errorMessage = error.message;
       }
       // Agregar el status code al mensaje para claridad
-      if (err?.status) {
-        errorMessage = `[${err.status}] ${errorMessage}`;
+      if ('status' in error && error.status) {
+        errorMessage = `[${error.status}] ${errorMessage}`;
       }
       setError(errorMessage);
     } finally {

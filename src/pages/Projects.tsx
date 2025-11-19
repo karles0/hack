@@ -40,7 +40,7 @@ export const Projects = () => {
   };
 
   useEffect(() => {
-    loadProjects(1, search);
+    loadProjects(1);
   }, []);
 
   const handleSearch = () => {

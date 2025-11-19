@@ -25,7 +25,8 @@ export interface LoginResponse {
 }
 
 export interface RegisterResponse {
-  [key: string]: any;
+  message?: string;
+  [key: string]: unknown;
 }
 
 // API Error type
@@ -34,8 +35,10 @@ export interface ApiError {
     loc: (string | number)[];
     msg: string;
     type: string;
-  }>;
+  }> | string;
   message?: string;
+  status?: number;
+  statusText?: string;
 }
 
 // Project types

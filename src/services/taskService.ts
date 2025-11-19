@@ -16,7 +16,7 @@ export const taskService = {
   // Lista todas las tareas con filtros y paginación
   // ======================================
   async listTasks(filters?: TaskFilters): Promise<TasksListResponse> {
-    const params: Record<string, any> = {
+    const params: Record<string, string | number> = {
       page: filters?.page || 1,
       limit: filters?.limit || 20,
     };
