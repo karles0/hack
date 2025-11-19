@@ -6,6 +6,7 @@ import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { Projects } from './pages/Projects';
 import { Tasks } from './pages/Tasks';
+import { Team } from './pages/Team';
 import { ROUTES } from './utils/constants';
 import './App.css';
 
@@ -38,6 +39,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Tasks />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.TEAM}
+            element={
+              <ProtectedRoute>
+                <Team />
               </ProtectedRoute>
             }
           />

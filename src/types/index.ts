@@ -123,3 +123,18 @@ export interface TaskFilters {
   page?: number;
   limit?: number;
 }
+
+// Team types
+export interface TeamMember {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export interface TeamMembersResponse {
+  members: TeamMember[];
+}
+
+export interface MemberTasksResponse {
+  tasks: Task[];
+}

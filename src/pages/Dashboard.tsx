@@ -84,6 +84,9 @@ export const Dashboard = () => {
               <Button onClick={() => navigate(ROUTES.TASKS)}>
                 Go to Tasks
               </Button>
+              <Button onClick={() => navigate(ROUTES.TEAM)}>
+                Go to Team
+              </Button>
             </div>
           </Card>
         </div>

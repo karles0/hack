@@ -14,6 +14,9 @@ export const API_ENDPOINTS = {
   TASKS: {
     BASE: `/${API_VERSION}/tasks`,
   },
+  TEAM: {
+    MEMBERS: `/${API_VERSION}/team/members`,
+  },
 };
 
 // Local Storage Keys
@@ -29,4 +32,5 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   PROJECTS: '/projects',
   TASKS: '/tasks',
+  TEAM: '/team',
 };
