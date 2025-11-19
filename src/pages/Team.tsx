@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { teamService } from '../services/teamService';
 import { TeamMemberList } from '../components/team/TeamMemberList';
-import { TaskCard } from '../components/tasks/TaskCard';
 import { Modal } from '../components/common/Modal';
 import { Button } from '../components/common/Button';
 import { ROUTES } from '../utils/constants';

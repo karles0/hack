@@ -1,12 +1,12 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
-import type { Task, TaskPriority, CreateTaskRequest, UpdateTaskRequest } from '../../types';
+import type { Task, TaskPriority } from '../../types';
 
 interface TaskFormProps {
   task?: Task;
   projectId?: number;
-  onSubmit: (data: CreateTaskRequest | UpdateTaskRequest) => Promise<void>;
+  onSubmit: (data: any) => Promise<void>;
   onCancel: () => void;
 }
 
