@@ -38,22 +38,103 @@ export interface ApiError {
   message?: string;
 }
 
-// Project types (for future implementation)
+// Project types
+export type ProjectStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+
 export interface Project {
   id: number;
   name: string;
-  description?: string;
+  description: string;
+  status: ProjectStatus;
+  owner_id: number;
+  created_at: string;
+  updated_at: string;
+  tasks?: Task[];
+}
+
+export interface CreateProjectRequest {
+  name: string;
+  description: string;
+  status: ProjectStatus;
+}
+
+export interface UpdateProjectRequest {
+  name: string;
+  description: string;
+  status: ProjectStatus;
+}
+
+export interface ProjectsListResponse {
+  projects: Project[];
+  total_pages: number;
+  current_page: number;
+}
+
+// Task types
+export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'COMPLETED';
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+
+export interface Task {
+  id: number;
+  title: string;
+  description: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  project_id: number;
+  assigned_to: number | null;
+  due_date: string | null;
   created_at: string;
   updated_at: string;
 }
 
-// Task types (for future implementation)
-export interface Task {
-  id: number;
+export interface CreateTaskRequest {
   title: string;
-  description?: string;
-  status: 'pending' | 'in_progress' | 'completed';
+  description: string;
   project_id: number;
-  created_at: string;
-  updated_at: string;
+  priority: TaskPriority;
+  due_date?: string | null;
+  assigned_to?: number | null;
+}
+
+export interface UpdateTaskRequest {
+  title?: string;
+  description?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  due_date?: string | null;
+  assigned_to?: number | null;
+}
+
+export interface UpdateTaskStatusRequest {
+  status: TaskStatus;
+}
+
+export interface TasksListResponse {
+  tasks: Task[];
+  total_pages: number;
+  current_page: number;
+}
+
+export interface TaskFilters {
+  project_id?: number;
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  assigned_to?: number;
+  page?: number;
+  limit?: number;
+}
+
+// Team types
+export interface TeamMember {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export interface TeamMembersResponse {
+  members: TeamMember[];
+}
+
+export interface MemberTasksResponse {
+  tasks: Task[];
 }

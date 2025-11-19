@@ -4,6 +4,10 @@ import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
+import { Projects } from './pages/Projects';
+import { ProjectDetail } from './pages/ProjectDetail';
+import { Tasks } from './pages/Tasks';
+import { Team } from './pages/Team';
 import { ROUTES } from './utils/constants';
 import './App.css';
 
@@ -24,12 +28,18 @@ function App() {
             }
           />
           <Route
+            path={ROUTES.PROJECT_DETAIL}
+            element={
+              <ProtectedRoute>
+                <ProjectDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path={ROUTES.PROJECTS}
             element={
               <ProtectedRoute>
-                <div style={{ padding: '2rem' }}>
-                  <h1>Projects - Coming Soon</h1>
-                </div>
+                <Projects />
               </ProtectedRoute>
             }
           />
@@ -37,9 +47,15 @@ function App() {
             path={ROUTES.TASKS}
             element={
               <ProtectedRoute>
-                <div style={{ padding: '2rem' }}>
-                  <h1>Tasks - Coming Soon</h1>
-                </div>
+                <Tasks />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.TEAM}
+            element={
+              <ProtectedRoute>
+                <Team />
               </ProtectedRoute>
             }
           />
