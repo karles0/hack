@@ -59,9 +59,9 @@ export interface CreateProjectRequest {
 }
 
 export interface UpdateProjectRequest {
-  name?: string;
-  description?: string;
-  status?: ProjectStatus;
+  name: string;
+  description: string;
+  status: ProjectStatus;
 }
 
 export interface ProjectsListResponse {
