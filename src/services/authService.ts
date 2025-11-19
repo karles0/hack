@@ -15,10 +15,13 @@ export const authService = {
   // Registra un nuevo usuario
   // ======================================
   async register(data: RegisterRequest): Promise<RegisterResponse> {
+    console.log('POST Register URL:', API_ENDPOINTS.AUTH.REGISTER);
+    console.log('POST Register Data:', JSON.stringify({ ...data, password: '***' }, null, 2));
     const response = await api.post<RegisterResponse>(
       API_ENDPOINTS.AUTH.REGISTER,
       data
     );
+    console.log('POST Register Response:', response.data);
     return response.data;
   },
 

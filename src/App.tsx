@@ -8,6 +8,7 @@ import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { Tasks } from './pages/Tasks';
 import { Team } from './pages/Team';
+import { NotFound } from './pages/NotFound';
 import { ROUTES } from './utils/constants';
 import './App.css';
 
@@ -59,7 +60,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

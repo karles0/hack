@@ -1,7 +1,8 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { Input } from '../common/Input';
 import { Button } from '../common/Button';
-import type { Task, TaskPriority } from '../../types';
+import { projectService } from '../../services/projectService';
+import type { Task, TaskPriority, Project } from '../../types';
 
 interface TaskFormProps {
   task?: Task;
@@ -30,6 +31,8 @@ export const TaskForm = ({
   const [selectedProjectId, setSelectedProjectId] = useState(
     task?.project_id?.toString() || projectId?.toString() || ''
   );
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -44,6 +47,27 @@ export const TaskForm = ({
       setSelectedProjectId(task.project_id.toString());
     }
   }, [task]);
+
+  // Load projects for new tasks
+  useEffect(() => {
+    if (!task) {
+      loadProjects();
+    }
+  }, [task]);
+
+  const loadProjects = async () => {
+    setLoadingProjects(true);
+    try {
+      // Load all projects (first page with higher limit)
+      const response = await projectService.listProjects(1, 100);
+      setProjects(response.projects);
+    } catch (error) {
+      console.error('Error loading projects:', error);
+      setError('Error al cargar los proyectos');
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -172,15 +196,43 @@ export const TaskForm = ({
       </div>
 
       {!task && (
-        <Input
-          type="number"
-          label="ID del Proyecto"
-          placeholder="ID del proyecto"
-          value={selectedProjectId}
-          onChange={(e) => setSelectedProjectId(e.target.value)}
-          required
-          min="1"
-        />
+        <div style={{ marginBottom: '1rem' }}>
+          <label
+            style={{
+              display: 'block',
+              marginBottom: '0.5rem',
+              fontWeight: '500',
+              color: '#333',
+            }}
+          >
+            Proyecto *
+          </label>
+          <select
+            value={selectedProjectId}
+            onChange={(e) => setSelectedProjectId(e.target.value)}
+            required
+            disabled={loadingProjects}
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              fontSize: '1rem',
+              border: '1px solid #d1d5db',
+              borderRadius: '0.375rem',
+              outline: 'none',
+              backgroundColor: loadingProjects ? '#f3f4f6' : 'white',
+              boxSizing: 'border-box',
+            }}
+          >
+            <option value="">
+              {loadingProjects ? 'Cargando proyectos...' : 'Selecciona un proyecto'}
+            </option>
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.name} (ID: {project.id})
+              </option>
+            ))}
+          </select>
+        </div>
       )}
 
       <div style={{ marginBottom: '1rem' }}>
