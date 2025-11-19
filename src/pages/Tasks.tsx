@@ -525,22 +525,6 @@ export const Tasks = () => {
                   </p>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                  <div>
-                    <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.25rem', color: '#374151' }}>
-                      ID
-                    </label>
-                    <p style={{ color: '#6b7280', margin: 0 }}>{taskDetails.id}</p>
-                  </div>
-
-                  <div>
-                    <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.25rem', color: '#374151' }}>
-                      Proyecto ID
-                    </label>
-                    <p style={{ color: '#6b7280', margin: 0 }}>{taskDetails.project_id}</p>
-                  </div>
-                </div>
-
                 <div>
                   <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.25rem', color: '#374151' }}>
                     Asignado a
